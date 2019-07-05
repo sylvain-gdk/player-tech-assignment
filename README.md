@@ -2,18 +2,19 @@
 
 ## Problem description
 
-Imagine you want to update the software of thousand of music players that are already in the field. A music player is composed of multiple component, each having its version.
-We know that every 15 mins, each player query an API to see if a new version is available and then update itself.
+Imagine you want to update the software of thousands of music players that are already in the field. A music player is composed of multiple components, each having its own version.
+
+We know that every 15 minutes, each player queries an API to see if a new version is available and then updates itself.
 
 ## The assignment
 
-You need to create a production-ready tool that will automate the update of thousand music players.
+You need to create a production-ready tool that will automate the update of a thousand music players.
 
-Your tool will be used by different people using different operating systems. Most commons will be Windows, MacOS and Linux
+Your tool will be used by different people using different operating systems. The most common ones will be Windows, MacOS and Linux.
 
-The input is a .csv file containing, at least, MAC addresses of players to update, always in the first column.
+The input is a .csv file containing, at the very minimum, MAC addresses of players to update, always in the first column.
 
-### Example of a .cvs file:
+### Example of a .csv file:
 ```
 mac_addresses, id1, id2, id3
 a1:bb:cc:dd:ee:ff, 1, 2, 3
@@ -22,11 +23,15 @@ a3:bb:cc:dd:ee:ff, 1, 2, 3
 a4:bb:cc:dd:ee:ff, 1, 2, 3
 ```
 
-### The API to use to update the software version is:
+The `id1`, `id2` and `id3` fields aren't used in this assignment. The example is shown simply to demonstrate what the .csv file should look like.
+
+### The API to use to update the software version
 
 ```
 PUT /profiles/clientId:{macaddress}
 ```
+
+You will need to provide a client id and an authentication token in the headers. For the purpose of this test, these values can be anything but keep in mind that the token will expire in real life.
 
 #### Request
 
@@ -57,7 +62,6 @@ Body
     ]
   }
 }
-
 ```
 
 #### Reponses
@@ -155,14 +159,16 @@ Body
 ```
 
 ## What we mean by production-ready:
+
 - developer documentation (how to build, how to run tests)
-- user documentation (how to use the tool, can be "embedded" in the tool itself or in a document)
+- user documentation (how to use the tool, it can be "embedded" in the tool itself or in a document)
 - unit tests
 
 ## Important notes
 
-You can use the language/technology of your choice and it is highly suggested to provide a document (plain text or markdown, nothing fancy) to explain your decisions
+- you can use the language/technology of your choice
+- explain your assumptions and technical decisions in a document (plain text or markdown, nothing fancy)
 
 ## Submission
 
-Submit your assignment using a public github / gitlab / bitbucket repository (please don't use "touchtunes" in repo name or description) or a zip archive.
+Submit your assignment using a public GitHub / GitLab / Bitbucket repository (don't use our company name in the repo name or description) or a zip archive.
