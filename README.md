@@ -8,7 +8,7 @@ We know that every 15 minutes, each player queries an API to see if a new versio
 
 ## The assignment
 
-You need to create a production-ready tool that will automate the update of a thousand music players.
+You need to create a production-ready tool that will automate the update of a thousand music players by using an API. You don't have to create the API.
 
 Your tool will be used by different people using different operating systems. The most common ones will be Windows, MacOS and Linux.
 
