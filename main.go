@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"time"
 )
 
+// using struct for the profile so that it is statically typed
 type Profile struct {
 	Applications []*Application `json:"applications"`
 }
@@ -22,59 +22,55 @@ type Application struct {
 }
 
 func main() {
+	var filePath = os.Args[1]
+	// "./players.csv"
 	const url = "https://ad48d74f-9fe5-4ce6-878c-e9f6c70c48bb.mock.pstmn.io/profiles/"
 
-	id1 := &Application{
-		ApplicationId: "music_app",
-		Version:       "v1.4.10",
+	applications := []*Application{
+		{"music_app", "v1.4.10"},
+		{"diagnostic_app", "v1.2.6"},
+		{"settings_app", "v1.1.5"},
 	}
-	id2 := &Application{
-		ApplicationId: "diagnostic_app",
-		Version:       "v1.2.6",
-	}
-	id3 := &Application{
-		ApplicationId: "settings_app",
-		Version:       "v1.1.5",
-	}
-	applications := make([]*Application, 3)
-
 	profile := Profile{
-		Applications: append(applications, id1, id2, id3),
+		Applications: applications,
 	}
 
-	file, err := os.Open("./players.csv")
+	file, err := os.Open(filePath)
 	if err != nil {
 		log.Print(err)
 		panic(err)
 	}
 	defer file.Close()
 
-	// read from csv file line by line
+	// read from .csv file line by line
 	fileScanner := bufio.NewScanner(file)
 	fileScanner.Split(bufio.ScanLines)
 
 	// call each player to update their application(s)
 	for fileScanner.Scan() {
+		// using only the first column (mac_addresses)
 		clientId := strings.Split(fileScanner.Text(), ",")[0]
 
-		// skipping first line (column names)
+		// skipping first line if its column name
 		if clientId != "mac_addresses" {
 			res, err := callPlayerToUpdate(url, clientId, &profile)
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println(res)
+			log.Println(res)
 		}
 	}
 }
 
 // initiates the application(s) update on each player
 func callPlayerToUpdate(url, clientId string, profile *Profile) (string, error) {
-	body, _ := json.Marshal(profile)
-	token := "12345"
-
-	log.Printf("Calling player %v...", clientId)
+	token := "12345" // TODO: use JWT
 	url += clientId
+
+	log.Printf("Calling player: %v...", clientId)
+	// marshalling the profile into []byte
+	body, _ := json.Marshal(profile)
+	// using http.NewRequest so I can add headers to the request
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
@@ -93,7 +89,6 @@ func callPlayerToUpdate(url, clientId string, profile *Profile) (string, error) 
 	if err != nil {
 		return "", err
 	}
-	defer res.Body.Close()
-
+	// returning status for testing
 	return res.Status, nil
 }
