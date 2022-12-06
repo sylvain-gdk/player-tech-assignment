@@ -9,7 +9,7 @@ import (
 
 var a = Args{
 	BaseURL:      "",
-	FilePath:     "./players.csv",
+	FilePath:     "./fixtures/clients.csv",
 	SecretForJWT: "secret",
 	Token:        "",
 }

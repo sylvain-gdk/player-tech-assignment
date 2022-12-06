@@ -2,6 +2,4 @@ module github.com/sylvain-gdk/player-tech-assignement
 
 go 1.19
 
-require (
-	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
-)
+require github.com/golang-jwt/jwt/v4 v4.4.3

@@ -61,7 +61,7 @@ const baseURL string = "https://ad48d74f-9fe5-4ce6-878c-e9f6c70c48bb.mock.pstmn.
 func main() {
 	/*
 	 * go run command takes the path for the .csv file as the first argument and
-	 * the JWT secret as the second argument i.e. go run main.go ./players.csv MyVeryPrivateSecret
+	 * the JWT secret as the second argument i.e. go run main.go ./fixtures/clients.csv MyVeryPrivateSecret
 	 */
 	var args = Args{
 		BaseURL:      baseURL,
@@ -154,7 +154,7 @@ func InitUpdatePlayers(a Args) {
 	fileScanner := bufio.NewScanner(file)
 	fileScanner.Split(bufio.ScanLines)
 
-	// call each player to update their application(s)
+	// call each client to update their application(s)
 	for fileScanner.Scan() {
 		// using only the first column in .csv (mac_addresses)
 		clientId := strings.Split(fileScanner.Text(), ",")[0]
@@ -178,7 +178,7 @@ func InitUpdatePlayers(a Args) {
 }
 
 /*
- * initiates the application(s) update process on each player
+ * initiates the application(s) update process on each client
  */
 func (a *Args) CallPlayerToUpdate(clientId string) (int, error) {
 	req, err := a.CreateRequest(clientId)
@@ -197,10 +197,10 @@ func (a *Args) CallPlayerToUpdate(clientId string) (int, error) {
 }
 
 /*
- * creates a new request for a specific player, based on it's client id
+ * creates a new request for a specific client, based on it's client id
  */
 func (a *Args) CreateRequest(clientId string) (*http.Request, error) {
-	// creates url for a specific player
+	// creates url for a specific client
 	url := a.BaseURL + clientId
 
 	// marshalling the profile into []byte before sending as a buffer

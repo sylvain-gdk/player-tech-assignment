@@ -1,17 +1,26 @@
-## My Assumptions
+# Player Update Tool
 
-Each player already queries an API every 15 min to see if a new version is available and then updates itself.
+## About the Tool
 
-Therefore I will assume that the API `PUT /profiles/clientId:{macaddress}`, which the tool will call on each machine, has the capacity to get the application's binaries and update itself.
+This tool will call each client in order to eventually update its applications.
+When running in a CLI, it takes 2 arguments:
 
-Since we send the same profile to all players and get the same response back, there's no point testing on the response body.
+- [1] the file path to the client ids (.csv)
+- [2] a secret for the JWT
 
-## My Understanding
+## Getting started
 
-The tool would read from a .csv file to get the client ids and communicate with each player through this API: `PUT /profiles/clientId:{macaddress}` sending the same body request to all players.
+Clone the following repo:
+`[https://github.com/sylvain-gdk/player-tech-assignment.git]`
 
-Each player would then have the responsibility to handle the actual update of its application(s). (OUT OF SCOPE)
+### Start the update process
 
-## My Explanations
+```bash
+go run main.go <file path> <secret>
+```
 
-I tried to use the standard library as much as possible to limit the amount of dependencies i.e. net/http, test
+### Tests
+
+```bash
+go test -v
+```
