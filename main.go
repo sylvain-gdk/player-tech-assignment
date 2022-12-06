@@ -18,18 +18,25 @@ import (
 
 // using struct for the profile so that it is statically typed
 type RequestBody struct {
-	Profile *Profile
+	Profile *Profile `json:"profile"`
 }
 type Profile struct {
-	Applications []*Application
+	Applications []*Application `json:"applications"`
 }
 
 type Application struct {
-	ApplicationId string
-	Version       string
+	ApplicationId string `json:"applicationId"`
+	Version       string `json:"versiom"`
 }
 
-var profile = RequestBody{
+type Args struct {
+	BaseURL      string `json:"baseURL"`
+	FilePath     string `json:"filePath"`
+	SecretForJWT string `json:"secretForJWT"`
+	Token        string `json:"token"`
+}
+
+var profile = &RequestBody{
 	&Profile{
 		Applications: []*Application{
 			{
@@ -56,12 +63,15 @@ func main() {
 	 * go run command takes the path for the .csv file as the first argument and
 	 * the JWT secret as the second argument i.e. go run main.go ./players.csv MyVeryPrivateSecret
 	 */
-	var (
-		filePath     = os.Args[1]
-		secretForJWT = os.Args[2]
-	)
+	var args = Args{
+		BaseURL:      baseURL,
+		FilePath:     os.Args[1],
+		SecretForJWT: os.Args[2],
+		Token:        "",
+	}
+
 	// secret is passed from command line argument so it doesn't appear in git repo
-	InitUpdatePlayers(baseURL, filePath, secretForJWT)
+	InitUpdatePlayers(args)
 }
 
 /*
@@ -90,7 +100,7 @@ func IsValidToken(tokenString string) (bool, error) {
 		return nil, nil
 	})
 	if errors.Is(err, jwt.ErrTokenMalformed) || errors.Is(err, jwt.ErrTokenExpired) {
-		return false, err
+		return false, errors.New("invalid token")
 	}
 	return true, nil
 }
@@ -118,21 +128,23 @@ func IsValidClientId(id string) bool {
 /*
  * starts the update process
  */
-func InitUpdatePlayers(baseURL, filePath, secretForJWT string) {
-	// execution should stop immediately if baseUrl is malformated
-	err := IsValidURL(baseURL)
+func InitUpdatePlayers(a Args) {
+	// execution should stop immediately if baseUrl is malformed
+	err := IsValidURL(a.BaseURL)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	// execution should stop immediately if token fails to create
-	token, err := CreateNewToken(secretForJWT, -6)
+	token, err := CreateNewToken(a.SecretForJWT, -6)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
+	// adding to args struct
+	a.Token = token
 	// open and read from .csv file line by line
-	file, err := os.Open(filePath)
+	file, err := os.Open(a.FilePath)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
@@ -155,7 +167,7 @@ func InitUpdatePlayers(baseURL, filePath, secretForJWT string) {
 				log.Printf("clientId: %v is not valid", clientId)
 			} else {
 				// calling player (should log error in a file but not exit on error)
-				statusCode, err := CallPlayerToUpdate(baseURL, clientId, token)
+				statusCode, err := a.CallPlayerToUpdate(clientId)
 				if err != nil {
 					log.Println(err)
 				}
@@ -168,8 +180,8 @@ func InitUpdatePlayers(baseURL, filePath, secretForJWT string) {
 /*
  * initiates the application(s) update process on each player
  */
-func CallPlayerToUpdate(baseURL, clientId, token string) (int, error) {
-	req, err := CreateRequest(baseURL, clientId, token)
+func (a *Args) CallPlayerToUpdate(clientId string) (int, error) {
+	req, err := a.CreateRequest(clientId)
 	if err != nil {
 		return 0, err
 	}
@@ -187,9 +199,9 @@ func CallPlayerToUpdate(baseURL, clientId, token string) (int, error) {
 /*
  * creates a new request for a specific player, based on it's client id
  */
-func CreateRequest(baseURL, clientId, token string) (*http.Request, error) {
+func (a *Args) CreateRequest(clientId string) (*http.Request, error) {
 	// creates url for a specific player
-	url := baseURL + clientId
+	url := a.BaseURL + clientId
 
 	// marshalling the profile into []byte before sending as a buffer
 	body, _ := json.Marshal(profile)
@@ -203,7 +215,7 @@ func CreateRequest(baseURL, clientId, token string) (*http.Request, error) {
 	// setting headers on the request
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("x-client-id", clientId)
-	req.Header.Add("x-authentication-token", token)
+	req.Header.Add("x-authentication-token", a.Token)
 
 	return req, nil
 }

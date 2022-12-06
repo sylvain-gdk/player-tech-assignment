@@ -22,7 +22,9 @@ The only external dependencies used are `JWT` for creating a token and `gostub` 
 
 I am passing the arguments `baseURL, clientId, token` to functions 'cause that way it's easy to replace when testing
 
-I would normally log any errors along the way but continue calling other players since there might be a lot of players to update. This way I would know which one failed and be able to run the update again on those.
+I would normally log any errors along the way but continue calling other players (unless critical error) since there might be a lot of players to update. This way I would know which one failed and be able to run the update again on those.
 
 I've created one single auth token with assumption that only one is required for all updates but of course we could have a JWT per player with specific information about the player inside.
 This JWT is very basic and is mostly for testing expiration
+
+I would normally stub the inner functions in my unit tests but it's the first time I do unit tests with Golang.
