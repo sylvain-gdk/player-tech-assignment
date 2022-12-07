@@ -70,7 +70,6 @@ func main() {
 		Token:        "",
 	}
 
-	// secret is passed from command line argument so it doesn't appear in git repo
 	InitUpdatePlayers(args)
 }
 

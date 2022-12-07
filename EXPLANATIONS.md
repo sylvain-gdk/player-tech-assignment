@@ -26,3 +26,7 @@ I've created one single auth token with assumption that only one is required for
 This JWT is very basic and is mostly for testing expiration
 
 I would normally stub the inner functions in my unit tests but it's the first time I do unit tests with Golang so it would have required a little more time.
+
+The hard coded `baseURL` (line 59 of main.go) will need to be changed prior to executing the script. It only needs to be done once assuming the baseURL is the same for all clients.
+
+You'll also notice I passed the Args struct as a prefix to the function instead of as arguments. I find it keeps things cleaner by not having everything passed as arguments.
